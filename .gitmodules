@@ -1,0 +1,3 @@
+[submodule "borrower-backend/lib/forge-std"]
+	path = borrower-backend/lib/forge-std
+	url = https://github.com/foundry-rs/forge-std
