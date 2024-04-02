@@ -5,8 +5,8 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 
-contract Registra is ERC721URIStorage, Ownable {
-    //Only registra can mint a Nft Property Token 
+contract Registry is ERC721URIStorage, Ownable {
+    //Only registry can mint a Nft Property Token 
     uint256 public _requestIds;
     uint256 private _tokenIds;
 
@@ -30,7 +30,7 @@ contract Registra is ERC721URIStorage, Ownable {
     // Event to log asset transfer
     event AssetTransferred(address indexed previousOwner, address indexed newOwner, uint256 indexed tokenId);
 
-    constructor() ERC721("RegistraProperties", "RPI") Ownable(msg.sender) {}
+    constructor() ERC721("RegistryProperties", "RPI") Ownable(msg.sender) {}
 
     function awardItem(address player, string memory URI, string memory ownerID, string memory PropID)
         public
