@@ -1,9 +1,0 @@
-[submodule "borrower-backend/lib/forge-std"]
-	path = borrower-backend/lib/forge-std
-	url = https://github.com/foundry-rs/forge-std
-[submodule "lender-backend/lib/forge-std"]
-	path = lender-backend/lib/forge-std
-	url = https://github.com/foundry-rs/forge-std
-[submodule "registra-backend/lib/forge-std"]
-	path = registra-backend/lib/forge-std
-	url = https://github.com/foundry-rs/forge-std
