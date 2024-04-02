@@ -23,21 +23,25 @@ contract Registra is ERC721URIStorage, Ownable {
     }
 
     // Mapping to store asset details by token ID
-    mapping(address => mapping(uint256 => RwaVerificationRequest)) public assets;
+    mapping(uint256 tokenID => string OwnerID) public tokenIDToOwnerID;
+    mapping(uint256 tokenID => string PropID) public tokenIDToPropID;
+    mapping(string ownerID => uint256 tokenID) public OwnerIDToTokenID;
 
     // Event to log asset transfer
     event AssetTransferred(address indexed previousOwner, address indexed newOwner, uint256 indexed tokenId);
 
     constructor() ERC721("RegistraProperties", "RPI") Ownable(msg.sender) {}
 
-    function awardItem(address player, string memory tokenURI)
+    function awardItem(address player, string memory URI, string memory ownerID, string memory PropID)
         public
         onlyOwner
         returns (uint256)
     {
         uint256 newItemId = _tokenIds;
         _mint(player, _tokenIds);
-        _setTokenURI(newItemId, tokenURI);
+        tokenIDToOwnerID[_tokenIds] = string ownerID;
+        tokenIDToPropID[_tokenIds] = string PropID;
+        OwnerIDToTokenID[ownerID] = uint256 _tokenIds;
 
         _tokenIds++;
         return (_tokenIds - 1);
@@ -45,21 +49,14 @@ contract Registra is ERC721URIStorage, Ownable {
 
     function verification_request(
         address _borrower,
-        uint256 _property_RegId,
-        uint256 _survey_zip_code,
-        uint256 _survey_number,
-        string memory _property_type
-        
+        uint256 _property_RegId,        
     ) 
         external 
         returns (bool success)
     {
-
-        assets[msg.sender][_requestIds].property_type = _property_type;
-        assets[msg.sender][_requestIds].p_owner = _borrower;
-        assets[msg.sender][_requestIds].property_RegId = _property_RegId;
-        assets[msg.sender][_requestIds].survey_zip_code = _survey_zip_code;
-        assets[msg.sender][_requestIds].survey_number = _survey_number;
+        tokenID = OwnerIDToTokenID[_borrower];
+        if (tokenIDToPropID[_tokenIds] = string PropID == _property_RegId) return true;
+        else return false
         _requestIds++;
         return true;
     }
