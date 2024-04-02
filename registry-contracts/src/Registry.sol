@@ -1,82 +1,72 @@
-// SPDX-License-Identifier: UNLICENSED
-pragma solidity ^0.8.13;
+// SPDX-License-Identifier: MIT
 
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
+pragma solidity ^0.8.19;
+
+import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-
-contract Registry is ERC721URIStorage, Ownable {
-    //Only registry can mint a Nft Property Token 
-    uint256 public _requestIds;
-    uint256 private _tokenIds;
-
-
-    struct RwaVerificationRequest {
-        string property_type;
-        string description;
-        uint256 value; // Value can be in Wei or other denomination
-        address p_owner; // Address of the current property owner
-        uint256 property_RegId;
-        uint256 survey_zip_code;
-        uint256 survey_number;
-        bool verified;
+contract Registry is ERC721, Ownable {
+    struct Asset {
+        uint256 id;
+        string ownerId;
+        address ownerAddress;
     }
 
-    // Mapping to store asset details by token ID
-    mapping(uint256 tokenID => string OwnerID) public tokenIDToOwnerID;
-    mapping(uint256 tokenID => string PropID) public tokenIDToPropID;
-    mapping(string ownerID => uint256 tokenID) public OwnerIDToTokenID;
+    mapping(uint256 tokenId => Asset) public assets;
+    mapping(address assetOwner => uint256 tokenId) public owners;
+    uint256 private _tokenIds;
 
-    // Event to log asset transfer
     event AssetTransferred(address indexed previousOwner, address indexed newOwner, uint256 indexed tokenId);
 
     constructor() ERC721("RegistryProperties", "RPI") Ownable(msg.sender) {}
 
-    function awardItem(address player, string memory URI, string memory ownerID, string memory PropID)
-        public
+    /**
+     * Create an asset and assign it to the asset owner.
+     * Only the registry can create new assets.
+     * @param ownerAddress The address of the asset owner
+     * @param ownerId The id of the asset owner
+     * @param assetId The id of the asset
+     * @return tokenId The id of the newly created asset
+     */
+    function createAsset(address ownerAddress, string memory ownerId, uint256 assetId)
+        external
         onlyOwner
-        returns (uint256)
+        returns (uint256 tokenId)
     {
-        uint256 newItemId = _tokenIds;
-        _mint(player, _tokenIds);
-        tokenIDToOwnerID[_tokenIds] = string ownerID;
-        tokenIDToPropID[_tokenIds] = string PropID;
-        OwnerIDToTokenID[ownerID] = uint256 _tokenIds;
-
-        _tokenIds++;
-        return (_tokenIds - 1);
+        tokenId = ++_tokenIds;
+        _safeMint(ownerAddress, tokenId);
+        assets[tokenId] = Asset({id: assetId, ownerId: ownerId, ownerAddress: ownerAddress});
+        owners[ownerAddress] = tokenId;
     }
 
-    function verification_request(
-        address _borrower,
-        uint256 _property_RegId,        
-    ) 
-        external 
-        returns (bool success)
-    {
-        tokenID = OwnerIDToTokenID[_borrower];
-        if (tokenIDToPropID[_tokenIds] = string PropID == _property_RegId) return true;
-        else return false
-        _requestIds++;
-        return true;
-    }
-
-
-    function transferAsset(uint256 tokenId, address newOwner, address oldOwner) external {
-        // Check if the caller is the current owner of the asset
+    /**
+     * Transfer an asset to a new owner.
+     * Only the current owner of the asset can transfer it to a new owner.
+     * @param tokenId The id of the token to transfer (different from asset id)
+     * @param newOwner The address of the new owner
+     * @param newOwnerId The id of the new owner
+     */
+    function transferAsset(uint256 tokenId, address newOwner, string memory newOwnerId) external {
         require(ownerOf(tokenId) == msg.sender, "You don't own this asset");
 
         // Transfer the token to the new owner
-        _transfer(msg.sender, newOwner, tokenId);
+        _safeTransfer(msg.sender, newOwner, tokenId);
 
         // Update asset ownership
-        assets[oldOwner][tokenId].p_owner = newOwner;
+        assets[tokenId].ownerAddress = newOwner;
+        assets[tokenId].ownerId = newOwnerId;
 
-        // Emit event
         emit AssetTransferred(msg.sender, newOwner, tokenId);
     }
 
-
-
+    /**
+     * Verify the asset ownership by checking the asset ID and the borrower ID.
+     * @param _borrower The address of the borrower
+     * @param _assetId The id of the asset
+     * @return borrowerOwnsAsset True if the borrower owns the asset, false otherwise
+     */
+    function verifyRequest(address _borrower, uint256 _assetId) external view returns (bool borrowerOwnsAsset) {
+        uint256 tokenId = owners[_borrower];
+        return assets[tokenId].id == _assetId;
+    }
 }
-
