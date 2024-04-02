@@ -1,0 +1,3 @@
+[submodule "registry-contracts/lib/openzeppelin-contracts"]
+	path = registry-contracts/lib/openzeppelin-contracts
+	url = https://github.com/openzeppelin/openzeppelin-contracts
