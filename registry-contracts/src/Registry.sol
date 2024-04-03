@@ -69,4 +69,9 @@ contract Registry is ERC721, Ownable {
         uint256 tokenId = owners[_borrower];
         return assets[tokenId].id == _assetId;
     }
+
+    function getAsset(address _borrower) public view returns (Asset memory){
+        uint256 tokenId = owners[_borrower];
+        return assets[tokenId];
+    }
 }
