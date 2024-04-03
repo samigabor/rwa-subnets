@@ -42,7 +42,7 @@ contract Lender is Ownable {
     }
 
     /**
-     * @dev Request a loan from the lender
+     * Request a loan from the lender.
      * @param _borrowerId The id of the borrower
      * @param _amount The amount of the loan
      * @return requestId The id of the request
@@ -64,6 +64,7 @@ contract Lender is Ownable {
 
     /**
      * @dev Create a loan for a given request
+     * If borrower has registered assets, the loan will automatically be approved, otherwise rejected
      * @param requestId The id of the request
      * @return loanId The id of the loan
      */
@@ -85,6 +86,7 @@ contract Lender is Ownable {
             loan.status = Status.REJECTED;
         }
 
+        requests[requestId].status = loan.status;
         loans[request.borrower] = loan;
     }
 }
