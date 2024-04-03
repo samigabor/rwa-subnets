@@ -20,7 +20,7 @@ contract CommunityRegistryTest is Test {
 
     function setUp() public {
         DeployContracts deployScript = new DeployContracts();
-        (registry, helperConfig) = deployScript.run();
+        (registry, /** lender */, helperConfig) = deployScript.run();
         (deployer, ) = helperConfig.config();
         from = makeAddr("user1");
         to = makeAddr("user2");
