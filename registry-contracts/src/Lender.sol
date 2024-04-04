@@ -30,7 +30,7 @@ contract Lender is Ownable {
         Status status;
     }
 
-    IRegistry registry;
+    IRegistry public registry;
     mapping(uint256 requestId => LoanRequest) public requests;
     mapping(address borrower => Loan) public loans;
 
