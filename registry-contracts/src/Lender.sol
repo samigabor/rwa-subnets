@@ -89,4 +89,12 @@ contract Lender is Ownable {
         requests[requestId].status = loan.status;
         loans[request.borrower] = loan;
     }
+
+    function getLoanRequest(uint256 requestId) public view returns (LoanRequest memory) {
+        return requests[requestId];
+    }
+
+    function getLoan(address borrower) public view returns (Loan memory) {
+        return loans[borrower];
+    }
 }
